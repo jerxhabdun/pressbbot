@@ -1,3 +1,0 @@
-# only ignore the login file in the current directory, not subdir/login
-/login.js
-/.gitignore
