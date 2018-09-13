@@ -18,7 +18,8 @@ function parse(message){
 	else
 	{
 		var commands = message.split(" ");
-		return {command: commands[0], success: true, argument: commands[1]};
+		var arguments = commands.splice(1);
+		return {command: commands[0], success: true, argument: arguments};
 	}
 }
 
