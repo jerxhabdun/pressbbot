@@ -49,6 +49,7 @@ const lurkCD = 5;
 const primeCD = 30;
 const raidCD = 5;
 const soCD = 5;
+const multiCD = 5;
 
 function subSeconds(numSeconds) {
 		var time = new Date();
@@ -96,6 +97,11 @@ if (typeof Cooldowns.so == 'undefined') {
 		Cooldowns.so = new Date();
 		console.log('SO cmd cooldown: ' + Cooldowns.so);
 }
+
+if (typeof Cooldowns.multi == 'undefined') {
+	Cooldowns.multi = new Date();
+	console.log('Multi cmd cooldown: ' + Cooldowns.so);
+}
 // end create cooldown Date()s in memory
 
 client.on('chat', function(channel, user, message, self) {
@@ -109,10 +115,11 @@ client.on('chat', function(channel, user, message, self) {
  		
  		var words = message;
 		var command = words.slice(0, 1);
+
+		var parsed = jerx.parse(message);
 		
-		if (command === "!") {
-			
-			switch (message) {
+		if (parsed.success) {
+			switch (parsed.command) {
 				case "!raid":
 					if (subSeconds(raidCD) >= Cooldowns.raid) {
 						client.say(channel, "twitchRaid TombRaid twitchRaid TombRaid twitchRaid TombRaid twitchRaid TombRaid twitchRaid");
@@ -159,6 +166,39 @@ client.on('chat', function(channel, user, message, self) {
 						Cooldowns.discord = new Date(); // the discord cooldown is refreshed with the current Date()
 					} else {
 						console.log("Discord cooldown not up"); // otherwise we get a console log that the cooldown isn't up
+					}
+					break;
+				case "!skynet":
+					client.say("ElvisPressB", "I'm sorry, I certainly don't know what you're talking about...");
+					break;
+				case "!so":
+					if (subSeconds(soCD) >= Cooldowns.so) {
+						if (parsed.argument.length > 1) {
+							var soText = "Go visit our friends at ";
+							for (word in parsed.argument) {
+								if (word == parsed.argument.length-1) {
+									soText += "http://twitch.tv/" + parsed.argument[word] + " ";
+								} else {
+									soText += "http://twitch.tv/" + parsed.argument[word] + " & ";
+								}
+							}
+							soText += " and tell them I'm cool!";
+							client.say("ElvisPressB", soText);
+						} else {
+							client.say("ElvisPressB", "Go to http://twitch.tv/" + parsed.argument + " and tell them I'm cool");
+						}
+					} else {
+						console.log("Shoutout cooldown not up");
+					}
+					break;
+				case "!multi":
+					if (subSeconds(multiCD) >= Cooldowns.multi) {
+						var multiText = "Watch us all at once! Visit http://multistre.am/ElvisPressB/";
+						for (word in parsed.argument) {
+							multiText += parsed.argument[word] + "/"
+						}
+						multiText += "layout4";
+						client.say("ElvisPressB", multiText);
 					}
 					break;
 				default:
