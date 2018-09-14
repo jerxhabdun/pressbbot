@@ -5,49 +5,49 @@
 			"color": "Blue",
 			"commands": [
 				{
-					"trigger": "discord",
+					"trigger": "!discord",
 					"cooldown": 15,
 					"allowed": true,
 					"modOnly": true
 				},
 				{
-					"trigger": "hype",
+					"trigger": "!hype",
 					"cooldown": 15,
 					"allowed": true,
 					"modOnly": true
 				},
 				{
-					"trigger": "insta",
+					"trigger": "!insta",
 					"cooldown": 15,
 					"allowed": true,
 					"modOnly": true
 				},
 				{
-					"trigger": "lurk",
+					"trigger": "!lurk",
 					"cooldown": 15,
 					"allowed": true,
 					"modOnly": true
 				},
 				{
-					"trigger": "prime",
+					"trigger": "!prime",
 					"cooldown": 15,
 					"allowed": true,
 					"modOnly": true
 				},
 				{
-					"trigger": "raid",
+					"trigger": "!raid",
 					"cooldown": 15,
 					"allowed": true,
 					"modOnly": true
 				},
 				{
-					"trigger": "so",
+					"trigger": "!so",
 					"cooldown": 15,
 					"allowed": true,
 					"modOnly": true
 				},
 				{
-					"trigger": "multi",
+					"trigger": "!multi",
 					"cooldown": 15,
 					"allowed": true,
 					"modOnly": true
@@ -59,49 +59,49 @@
 			"color": "Red",
 			"commands": [
 				{
-					"trigger": "discord",
+					"trigger": "!discord",
 					"cooldown": 15,
 					"allowed": true,
 					"modOnly": false
 				},
 				{
-					"trigger": "hype",
+					"trigger": "!hype",
 					"cooldown": 5,
 					"allowed": true,
 					"modOnly": false
 				},
 				{
-					"trigger": "insta",
+					"trigger": "!insta",
 					"cooldown": 15,
 					"allowed": true,
 					"modOnly": false
 				},
 				{
-					"trigger": "lurk",
+					"trigger": "!lurk",
 					"cooldown": 5,
 					"allowed": true,
 					"modOnly": false
 				},
 				{
-					"trigger": "prime",
+					"trigger": "!prime",
 					"cooldown": 30,
 					"allowed": true,
 					"modOnly": false
 				},
 				{
-					"trigger": "raid",
+					"trigger": "!raid",
 					"cooldown": 5,
 					"allowed": true,
 					"modOnly": false
 				},
 				{
-					"trigger": "so",
+					"trigger": "!so",
 					"cooldown": 5,
 					"allowed": true,
 					"modOnly": false
 				},
 				{
-					"trigger": "multi",
+					"trigger": "!multi",
 					"cooldown": 5,
 					"allowed": true,
 					"modOnly": true
