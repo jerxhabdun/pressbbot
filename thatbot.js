@@ -100,7 +100,7 @@ if (typeof Cooldowns.so == 'undefined') {
 
 if (typeof Cooldowns.multi == 'undefined') {
 	Cooldowns.multi = new Date();
-	console.log('Multi cmd cooldown: ' + Cooldowns.so);
+	console.log('Multi cmd cooldown: ' + Cooldowns.multi);
 }
 // end create cooldown Date()s in memory
 
@@ -112,9 +112,6 @@ client.on('chat', function(channel, user, message, self) {
 	}
 
 	if (message) {
- 		
- 		var words = message;
-		var command = words.slice(0, 1);
 
 		var parsed = jerx.parse(message);
 		
@@ -172,43 +169,44 @@ client.on('chat', function(channel, user, message, self) {
 					client.say("ElvisPressB", "I'm sorry, I certainly don't know what you're talking about...");
 					break;
 				case "!so":
-					if (subSeconds(soCD) >= Cooldowns.so) {
-						if (parsed.argument.length > 1) {
-							var soText = "Go visit our friends at ";
-							for (word in parsed.argument) {
-								if (word == parsed.argument.length-1) {
-									soText += "http://twitch.tv/" + parsed.argument[word] + " ";
-								} else {
-									soText += "http://twitch.tv/" + parsed.argument[word] + " & ";
+					if (user["user-type"] === "mod" || user.username === channel.replace("#", "")) {
+						if (subSeconds(soCD) >= Cooldowns.so) {
+							if (parsed.argument.length > 1) {
+								var soText = "Go visit our friends at ";
+								for (word in parsed.argument) {
+									if (word == parsed.argument.length-1) {
+										soText += "http://twitch.tv/" + parsed.argument[word] + " ";
+									} else {
+										soText += "http://twitch.tv/" + parsed.argument[word] + " & ";
+									}
 								}
+								soText += " and tell them I'm cool!";
+								client.say("ElvisPressB", soText);
+							} else {
+								client.say("ElvisPressB", "Go to http://twitch.tv/" + parsed.argument + " and tell them I'm cool");
 							}
-							soText += " and tell them I'm cool!";
-							client.say("ElvisPressB", soText);
 						} else {
-							client.say("ElvisPressB", "Go to http://twitch.tv/" + parsed.argument + " and tell them I'm cool");
+							console.log("Shoutout cooldown not up");
 						}
-					} else {
-						console.log("Shoutout cooldown not up");
 					}
 					break;
 				case "!multi":
-					if (subSeconds(multiCD) >= Cooldowns.multi) {
-						var multiText = "Watch us all at once! Visit http://multistre.am/ElvisPressB/";
-						for (word in parsed.argument) {
-							multiText += parsed.argument[word] + "/"
+					if (user["user-type"] === "mod" || user.username === channel.replace("#", "")) {
+						if (subSeconds(multiCD) >= Cooldowns.multi) {
+							var multiText = "Watch us all at once! Visit http://multistre.am/ElvisPressB/";
+							for (word in parsed.argument) {
+								multiText += parsed.argument[word] + "/"
+							}
+							multiText += "layout4";
+							client.say("ElvisPressB", multiText);
 						}
-						multiText += "layout4";
-						client.say("ElvisPressB", multiText);
 					}
 					break;
 				default:
 					client.say(channel, "Sorry @" + user['display-name'] + " , but I don't recognize that command, please type !commands for a list of recognized commands.");
 				}
-
-
 			}
 		}
-
 });
 
 client.on("whisper", function (from, userstate, message, self) {
