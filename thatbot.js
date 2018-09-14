@@ -57,6 +57,14 @@ function subSeconds(numSeconds) {
 		return time;
 	}
 
+function checkMod(user, channel) {
+		if (user["user-type"] === "mod" || user.username === channel.replace("#", "")) { 
+			return true; 
+		} else { 
+			return false; 
+		}
+	}
+
 // create cooldowns in memory
 if (typeof Cooldowns.color == 'undefined') {
 		Cooldowns.color = 0;
@@ -169,7 +177,7 @@ client.on('chat', function(channel, user, message, self) {
 					client.say("ElvisPressB", "I'm sorry, I certainly don't know what you're talking about...");
 					break;
 				case "!so":
-					if (user["user-type"] === "mod" || user.username === channel.replace("#", "")) {
+					if (checkMod(user, channel)) {
 						if (subSeconds(soCD) >= Cooldowns.so) {
 							if (parsed.argument.length > 1) {
 								var soText = "Go visit our friends at ";
@@ -191,7 +199,7 @@ client.on('chat', function(channel, user, message, self) {
 					}
 					break;
 				case "!multi":
-					if (user["user-type"] === "mod" || user.username === channel.replace("#", "")) {
+					if (checkMod(user, channel)) {
 						if (subSeconds(multiCD) >= Cooldowns.multi) {
 							var multiText = "Watch us all at once! Visit http://multistre.am/ElvisPressB/";
 							for (word in parsed.argument) {
