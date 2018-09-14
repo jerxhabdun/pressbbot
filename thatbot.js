@@ -30,7 +30,8 @@ var client = new tmi.client(options);
 client.connect();
 
 client.on('connected', function(address, port) {
-	console.log("Address: " + address + " Port: " + port);
+	jerx.clearLog();
+	jerx.log("Address: " + address + " Port: " + port);
 	//This is a test of the timer crap I'm working on
 	//var id = jerx.manageTimers((function() { console.log('This is an iterative test'); }), null, null, null);
 });
@@ -114,12 +115,14 @@ if (typeof Cooldowns.multi == 'undefined') {
 // end create cooldown Date()s in memory
 
 client.on('chat', function(channel, user, message, self) {
+	if(self) return;
+	
 	var settings = jerx.getChannelSettings(settingsJSON, channel);
 	//console.log("The name of the settings is: "+settings.name+" and their preferred color is: "+settings.color);
 	
 	
 	if (Cooldowns.color === 0) {
-		client.color(settings.color);
+		client.color(typeof settings != "undefined" ? ( typeof settings.color == "string"? settings.color: "Red") : "Red");
 		Cooldowns.color = 1;
 	}
 
@@ -129,103 +132,115 @@ client.on('chat', function(channel, user, message, self) {
 		
 		if (parsed.success) {
 			var command = jerx.getCommandSettings(settings, parsed.command);
-			if(typeof command.trigger == 'undefined'){
-				command = jerx.getCommandSettings(settings, parsed.command.slice(1));
-			}
 			//console.log("Command is: "+command.trigger+" cooldown is "+command.cooldown+" allowed is "+command.allowed+" modOnly is "+command.modOnly);
 			//TODO: actually use the command object to drive the switch
-			
-			switch (parsed.command) {
-				case "!raid":
-					if (subSeconds(raidCD) >= Cooldowns.raid) {
-						client.say(channel, "twitchRaid TombRaid twitchRaid TombRaid twitchRaid TombRaid twitchRaid TombRaid twitchRaid");
-					Cooldowns.raid = new Date();
-					} else {
-						console.log("Raid cooldown not up");
-					}
-					break;
-				case "!prime":
-					if (subSeconds(primeCD) >= Cooldowns.prime) {
-						client.say(channel, "@" + user['display-name'] + " How to link your Twitch and Amazon Prime: https://help.twitch.tv/customer/portal/articles/2574978-how-to-link-your-amazon-account You can use your free prime sub to get a *sweet* savage emote! It's a great way to directly support Elvis!");
-						Cooldowns.prime = new Date();
-					} else {
-						console.log("Prime cooldown not up");
-					}
-					break;
-				case "!lurk":
-					if (subSeconds(lurkCD) >= Cooldowns.lurk) {
-						client.action(channel, "shows @" + user['display-name'] + " to a comfortable seat in the lurker section.");
-						Cooldowns.lurk = new Date();
-					} else {
-						console.log("Lurk cooldown not up");
-					}
-					break;
-				case "!insta":
-					if (subSeconds(instaCD) >= Cooldowns.insta) {
-						client.say(channel, "@" + user['display-name'] + " , check out Elvis' weird pictures here! https://www.instagram.com/elvispressb/");
-						Cooldowns.insta = new Date();
-					} else {
-						console.log("Insta cooldown not up");
-					}
-					break;
-				case "!hype":
-					if (subSeconds(hypeCD) >= Cooldowns.hype) {
-						client.say(channel, "Squid1 Squid2 Squid2 Squid3 Squid2 Squid2 Squid4");
-						Cooldowns.hype = new Date();
-					} else {
-						console.log("Hype cooldown not up");
-					}
-					break;
-				case "!discord": // discord command ?
-					if (subSeconds(discordCD) >= Cooldowns.discord) { // check the discord cooldown vs adjusted current time
-						client.say(channel, "@" + user['display-name'] + " , the PressB community Discord: https://discord.gg/x3HmECn");
-						Cooldowns.discord = new Date(); // the discord cooldown is refreshed with the current Date()
-					} else {
-						console.log("Discord cooldown not up"); // otherwise we get a console log that the cooldown isn't up
-					}
-					break;
-				case "!skynet":
-					client.say(channel, "I'm sorry, I certainly don't know what you're talking about...");
-					break;
-				case "!so":
-					if (checkMod(user, channel)) {
-						if (subSeconds(soCD) >= Cooldowns.so) {
-							if (parsed.argument.length > 1) {
-								var soText = "Go visit our friends at ";
-								for (word in parsed.argument) {
-									if (word == parsed.argument.length-1) {
-										soText += "http://twitch.tv/" + parsed.argument[word] + " ";
-									} else {
-										soText += "http://twitch.tv/" + parsed.argument[word] + " & ";
-									}
-								}
-								soText += " and tell them I'm cool!";
-								client.say(channel, soText);
-							} else {
-								client.say(channel, "Go to http://twitch.tv/" + parsed.argument + " and tell them I'm cool");
-							}
+			if(command.matched) {
+				switch (parsed.command) {
+					case "!raid":
+						if (subSeconds(raidCD) >= Cooldowns.raid) {
+							client.say(channel, "twitchRaid TombRaid twitchRaid TombRaid twitchRaid TombRaid twitchRaid TombRaid twitchRaid");
+						Cooldowns.raid = new Date();
 						} else {
-							console.log("Shoutout cooldown not up");
+							console.log("Raid cooldown not up");
 						}
-					}
-					break;
-				case "!multi":
-					if (checkMod(user, channel)) {
-						if (subSeconds(multiCD) >= Cooldowns.multi) {
-							var multiText = "Watch us all at once! Visit http://multistre.am/ElvisPressB/";
-							for (word in parsed.argument) {
-								multiText += parsed.argument[word] + "/"
+						break;
+					case "!prime":
+						if (subSeconds(primeCD) >= Cooldowns.prime) {
+							client.say(channel, "@" + user['display-name'] + " How to link your Twitch and Amazon Prime: https://help.twitch.tv/customer/portal/articles/2574978-how-to-link-your-amazon-account You can use your free prime sub to get a *sweet* savage emote! It's a great way to directly support Elvis!");
+							Cooldowns.prime = new Date();
+						} else {
+							console.log("Prime cooldown not up");
+						}
+						break;
+					case "!lurk":
+						if (subSeconds(lurkCD) >= Cooldowns.lurk) {
+							client.action(channel, "shows @" + user['display-name'] + " to a comfortable seat in the lurker section.");
+							Cooldowns.lurk = new Date();
+						} else {
+							console.log("Lurk cooldown not up");
+						}
+						break;
+					case "!insta":
+						if (subSeconds(instaCD) >= Cooldowns.insta) {
+							client.say(channel, "@" + user['display-name'] + " , check out Elvis' weird pictures here! https://www.instagram.com/elvispressb/");
+							Cooldowns.insta = new Date();
+						} else {
+							console.log("Insta cooldown not up");
+						}
+						break;
+					case "!hype":
+						if (subSeconds(hypeCD) >= Cooldowns.hype) {
+							client.say(channel, "Squid1 Squid2 Squid2 Squid3 Squid2 Squid2 Squid4");
+							Cooldowns.hype = new Date();
+						} else {
+							console.log("Hype cooldown not up");
+						}
+						break;
+					case "!discord": // discord command ?
+						if (subSeconds(discordCD) >= Cooldowns.discord) { // check the discord cooldown vs adjusted current time
+							client.say(channel, "@" + user['display-name'] + " , the PressB community Discord: https://discord.gg/x3HmECn");
+							Cooldowns.discord = new Date(); // the discord cooldown is refreshed with the current Date()
+						} else {
+							console.log("Discord cooldown not up"); // otherwise we get a console log that the cooldown isn't up
+						}
+						break;
+					case "!skynet":
+						client.say(channel, "I'm sorry, I certainly don't know what you're talking about...");
+						break;
+					case "!so":
+						if (checkMod(user, channel)) {
+							if (subSeconds(soCD) >= Cooldowns.so) {
+								if (parsed.argument.length > 1) {
+									var soText = "Go visit our friends at ";
+									for (word in parsed.argument) {
+										if (word == parsed.argument.length-1) {
+											soText += "http://twitch.tv/" + parsed.argument[word] + " ";
+										} else {
+											soText += "http://twitch.tv/" + parsed.argument[word] + " & ";
+										}
+									}
+									soText += " and tell them I'm cool!";
+									client.say(channel, soText);
+								} else {
+									client.say(channel, "Go to http://twitch.tv/" + parsed.argument + " and tell them I'm cool");
+								}
+							} else {
+								console.log("Shoutout cooldown not up");
 							}
-							multiText += "layout4";
-							client.say(channel, multiText);
 						}
-					}
-					break;
-				default:
-					client.say(channel, "Sorry @" + user['display-name'] + " , but I don't recognize that command, please type !commands for a list of recognized commands.");
+						break;
+					case "!multi":
+						if (checkMod(user, channel)) {
+							if (subSeconds(multiCD) >= Cooldowns.multi) {
+								var multiText = "Watch us all at once! Visit http://multistre.am/ElvisPressB/";
+								for (word in parsed.argument) {
+									multiText += parsed.argument[word] + "/"
+								}
+								multiText += "layout4";
+								client.say(channel, multiText);
+							}
+						}
+						break;
+					default:
+						client.say(channel, "Sorry @" + user['display-name'] + " , but I don't recognize that command, please type !commands for a list of recognized commands.");
 				}
 			}
 		}
+		jerx.log("Username is "+user.username)
+		/*
+		** This is a test of individual responses
+		if(user.username == 'jerxhabdun')
+		{
+			client.say(channel, "^^ This guy knows what he's talking about");
+		}
+		else if(user.username == 'sergeantsmokie')
+		{
+			var mocked = jerx.spongeMock(message);
+			jerx.log(mocked);
+			client.say(channel, mocked);
+		}
+		*/
+	}
 });
 
 client.on("whisper", function (from, userstate, message, self) {
