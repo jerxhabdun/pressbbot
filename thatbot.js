@@ -5,6 +5,7 @@ const login = require('./login');
 //This is a static load. Can update later to be asynch call so that channels can be added dynamically if needed
 var channelsFile = require('./channels.json');
 var admins = require('./admins.json');
+var settingsJSON = require('./commandSettings.json');
 
 // TMI OPTIONS
 var options = {
@@ -113,9 +114,12 @@ if (typeof Cooldowns.multi == 'undefined') {
 // end create cooldown Date()s in memory
 
 client.on('chat', function(channel, user, message, self) {
-
+	var settings = jerx.getChannelSettings(settingsJSON, channel);
+	//console.log("The name of the settings is: "+settings.name+" and their preferred color is: "+settings.color);
+	
+	
 	if (Cooldowns.color === 0) {
-		client.color("Red");
+		client.color(settings.color);
 		Cooldowns.color = 1;
 	}
 
@@ -124,6 +128,13 @@ client.on('chat', function(channel, user, message, self) {
 		var parsed = jerx.parse(message);
 		
 		if (parsed.success) {
+			var command = jerx.getCommandSettings(settings, parsed.command);
+			if(typeof command.trigger == 'undefined'){
+				command = jerx.getCommandSettings(settings, parsed.command.slice(1));
+			}
+			//console.log("Command is: "+command.trigger+" cooldown is "+command.cooldown+" allowed is "+command.allowed+" modOnly is "+command.modOnly);
+			//TODO: actually use the command object to drive the switch
+			
 			switch (parsed.command) {
 				case "!raid":
 					if (subSeconds(raidCD) >= Cooldowns.raid) {
@@ -174,7 +185,7 @@ client.on('chat', function(channel, user, message, self) {
 					}
 					break;
 				case "!skynet":
-					client.say("ElvisPressB", "I'm sorry, I certainly don't know what you're talking about...");
+					client.say(channel, "I'm sorry, I certainly don't know what you're talking about...");
 					break;
 				case "!so":
 					if (checkMod(user, channel)) {
@@ -189,9 +200,9 @@ client.on('chat', function(channel, user, message, self) {
 									}
 								}
 								soText += " and tell them I'm cool!";
-								client.say("ElvisPressB", soText);
+								client.say(channel, soText);
 							} else {
-								client.say("ElvisPressB", "Go to http://twitch.tv/" + parsed.argument + " and tell them I'm cool");
+								client.say(channel, "Go to http://twitch.tv/" + parsed.argument + " and tell them I'm cool");
 							}
 						} else {
 							console.log("Shoutout cooldown not up");
@@ -206,7 +217,7 @@ client.on('chat', function(channel, user, message, self) {
 								multiText += parsed.argument[word] + "/"
 							}
 							multiText += "layout4";
-							client.say("ElvisPressB", multiText);
+							client.say(channel, multiText);
 						}
 					}
 					break;
