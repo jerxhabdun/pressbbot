@@ -1,0 +1,112 @@
+{
+	"channels": [
+		{
+			"name": "#jerxhabdun",
+			"color": "Blue",
+			"commands": [
+				{
+					"trigger": "discord",
+					"cooldown": 15,
+					"allowed": true,
+					"modOnly": true
+				},
+				{
+					"trigger": "hype",
+					"cooldown": 15,
+					"allowed": true,
+					"modOnly": true
+				},
+				{
+					"trigger": "insta",
+					"cooldown": 15,
+					"allowed": true,
+					"modOnly": true
+				},
+				{
+					"trigger": "lurk",
+					"cooldown": 15,
+					"allowed": true,
+					"modOnly": true
+				},
+				{
+					"trigger": "prime",
+					"cooldown": 15,
+					"allowed": true,
+					"modOnly": true
+				},
+				{
+					"trigger": "raid",
+					"cooldown": 15,
+					"allowed": true,
+					"modOnly": true
+				},
+				{
+					"trigger": "so",
+					"cooldown": 15,
+					"allowed": true,
+					"modOnly": true
+				},
+				{
+					"trigger": "multi",
+					"cooldown": 15,
+					"allowed": true,
+					"modOnly": true
+				}
+			]
+		},
+		{
+			"name": "#elvispressb",
+			"color": "Red",
+			"commands": [
+				{
+					"trigger": "discord",
+					"cooldown": 15,
+					"allowed": true,
+					"modOnly": false
+				},
+				{
+					"trigger": "hype",
+					"cooldown": 5,
+					"allowed": true,
+					"modOnly": false
+				},
+				{
+					"trigger": "insta",
+					"cooldown": 15,
+					"allowed": true,
+					"modOnly": false
+				},
+				{
+					"trigger": "lurk",
+					"cooldown": 5,
+					"allowed": true,
+					"modOnly": false
+				},
+				{
+					"trigger": "prime",
+					"cooldown": 30,
+					"allowed": true,
+					"modOnly": false
+				},
+				{
+					"trigger": "raid",
+					"cooldown": 5,
+					"allowed": true,
+					"modOnly": false
+				},
+				{
+					"trigger": "so",
+					"cooldown": 5,
+					"allowed": true,
+					"modOnly": false
+				},
+				{
+					"trigger": "multi",
+					"cooldown": 5,
+					"allowed": true,
+					"modOnly": true
+				}
+			]
+		}
+	]
+}
