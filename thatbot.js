@@ -60,12 +60,12 @@ function subSeconds(numSeconds) {
 	}
 
 function checkMod(user, channel) {
-		if (user["user-type"] === "mod" || user.username === channel.replace("#", "")) { 
-			return true; 
-		} else { 
-			return false; 
-		}
+	if (user["user-type"] === "mod" || user.username === channel.replace("#", "")) { 
+		return true; 
+	} else { 
+		return false; 
 	}
+}
 
 // create cooldowns in memory
 if (typeof Cooldowns.color == 'undefined') {
@@ -177,11 +177,13 @@ client.on('chat', function(channel, user, message, self) {
 						}
 						break;
 					case "!discord": // discord command ?
-						if (subSeconds(discordCD) >= Cooldowns.discord) { // check the discord cooldown vs adjusted current time
-							client.say(channel, "@" + user['display-name'] + " , the PressB community Discord: https://discord.gg/x3HmECn");
-							Cooldowns.discord = new Date(); // the discord cooldown is refreshed with the current Date()
-						} else {
-							console.log("Discord cooldown not up"); // otherwise we get a console log that the cooldown isn't up
+						if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
+							if (subSeconds(command.cooldown) >= Cooldowns.discord) { // check the discord cooldown vs adjusted current time
+								client.say(channel, command.message.replace("$username", user['display-name']));
+								Cooldowns.discord = new Date(); // the discord cooldown is refreshed with the current Date()
+							} else {
+								console.log("Discord cooldown not up"); // otherwise we get a console log that the cooldown isn't up
+							}
 						}
 						break;
 					case "!skynet":
