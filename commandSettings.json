@@ -139,7 +139,6 @@
 					"modOnly": false,
 					"message": "@$username, check out <owner> pictures here! <instagram link>",
 					"replaceStrings": ["$username"]
-
 				},
 				{
 					"trigger": "!lurk",
@@ -168,10 +167,13 @@
 				{
 					"trigger": "!so",
 					"cooldown": 5,
-					"leadText": "Go visit our friend(s) at ",
+					"leadText": "Go visit our $friend at ",
 					"followText": "and tell them how cool I am!",
 					"allowed": true,
-					"modOnly": false
+					"modOnly": false,
+					"replaceStrings": ["$friend"],
+					"singular":"friend",
+					"plural":"friends"
 				},
 				{
 					"trigger": "!multi",
