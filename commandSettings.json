@@ -8,7 +8,9 @@
 					"trigger": "!discord",
 					"cooldown": 15,
 					"allowed": true,
-					"modOnly": true
+					"modOnly": true,
+					"message": "@$username, the Jerxhabdun community Discord: https://discord.gg/VEDWxMz",
+					"replaceStrings": ["$username"]
 				},
 				{
 					"trigger": "!hype",
@@ -62,7 +64,9 @@
 					"trigger": "!discord",
 					"cooldown": 15,
 					"allowed": true,
-					"modOnly": false
+					"modOnly": false,
+					"message": "@$username, the PressB community Discord: https://discord.gg/x3HmECn",
+					"replaceStrings": ["$username"]
 				},
 				{
 					"trigger": "!hype",
