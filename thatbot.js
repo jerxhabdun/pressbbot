@@ -218,7 +218,7 @@ client.on('chat', function(channel, user, message, self) {
 					case "!multi":
 						if (checkMod(user, channel)) {
 							if (subSeconds(multiCD) >= Cooldowns.multi) {
-								var multiText = command.leadText + " " + command.multiProvider + command.channelName + "/";
+								var multiText = command.leadText + " " + command.multiProvider + channel.slice(1) + "/";
 								for (word in parsed.argument) {
 									multiText += parsed.argument[word] + "/"
 								}

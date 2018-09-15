@@ -190,7 +190,6 @@
 					"leadText": "Watch us all at once at",
 					"followText": "layout4",
 					"multiProvider": "http://multistre.am/",
-					"channelName": "<channel name here, no brackets>",
 					"allowed": true,
 					"modOnly": true
 				}
