@@ -67,6 +67,9 @@ if (typeof Cooldowns.color == 'undefined') {
 		console.log('Color cooldown: ' + Cooldowns.color);
 }
 
+
+Cooldowns = jerx.initCooldowns(Cooldowns, settingsJSON.channels[1].commands);
+/*
 if (typeof Cooldowns.discord == 'undefined') {
 		Cooldowns.discord = new Date();
 		console.log('Discord cmd cooldown: ' + Cooldowns.discord);
@@ -106,6 +109,7 @@ if (typeof Cooldowns.multi == 'undefined') {
 	Cooldowns.multi = new Date();
 	console.log('Multi cmd cooldown: ' + Cooldowns.multi);
 }
+*/
 // end create cooldown Date()s in memory
 
 client.on('chat', function(channel, user, message, self) {
@@ -128,13 +132,29 @@ client.on('chat', function(channel, user, message, self) {
 			var command = jerx.getCommandSettings(settings, parsed.command);
 			//console.log("Command is: "+command.trigger+" cooldown is "+command.cooldown+" allowed is "+command.allowed+" modOnly is "+command.modOnly);
 			//TODO: actually use the command object to drive the switch
+			var replaceObj = {};
+			var replaced = "";
+			if(typeof command.replaceStrings !== "undefined") {
+				replaceObj = {
+					message : command.message,
+					replaceArray : command.replaceStrings,
+					chatInfo: {
+						user: user,
+						channel: channel
+					}
+				};
+				jerx.log(command.message);
+				replaced = jerx.replaceStringContents(replaceObj);
+				jerx.log(replaced);
+			}
+			
 			if(command.matched) {
 				switch (parsed.command) {
 					case "!raid":
 						if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
-							if (subSeconds(command.cooldown) >= Cooldowns.raid) {
+							if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
 								client.say(channel, command.message);
-							Cooldowns.raid = new Date();
+							Cooldowns[parsed.command] = new Date();
 							} else {
 								console.log("Raid cooldown not up");
 							}
@@ -142,9 +162,9 @@ client.on('chat', function(channel, user, message, self) {
 						break;
 					case "!prime":
 						if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
-							if (subSeconds(command.cooldown) >= Cooldowns.prime) {
+							if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
 								client.say(channel, command.message.replace("$username", user['display-name']));
-								Cooldowns.prime = new Date();
+								Cooldowns[parsed.command] = new Date();
 							} else {
 								console.log("Prime cooldown not up");
 							}
@@ -152,9 +172,9 @@ client.on('chat', function(channel, user, message, self) {
 						break;
 					case "!lurk":
 						if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
-							if (subSeconds(command.cooldown) >= Cooldowns.lurk) {
+							if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
 								client.say(channel, command.message.replace("$username", user['display-name']));
-								Cooldowns.lurk = new Date();
+								Cooldowns[parsed.command] = new Date();
 							} else {
 								console.log("Lurk cooldown not up");
 							}
@@ -162,9 +182,9 @@ client.on('chat', function(channel, user, message, self) {
 						break;
 					case "!insta":
 						if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
-							if (subSeconds(command.cooldown) >= Cooldowns.insta) {
+							if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
 								client.say(channel, command.message.replace("$username", user['display-name']));
-								Cooldowns.insta = new Date();
+								Cooldowns[parsed.command] = new Date();
 							} else {
 								console.log("Insta cooldown not up");
 							}
@@ -172,9 +192,9 @@ client.on('chat', function(channel, user, message, self) {
 						break;
 					case "!hype":
 						if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
-							if (subSeconds(command.cooldown) >= Cooldowns.hype) {
+							if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
 								client.say(channel, command.message);
-								Cooldowns.hype = new Date();
+								Cooldowns[parsed.command] = new Date();
 							} else {
 								console.log("Hype cooldown not up");
 							}
@@ -182,9 +202,9 @@ client.on('chat', function(channel, user, message, self) {
 						break;
 					case "!discord": // discord command ?
 						if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
-							if (subSeconds(command.cooldown) >= Cooldowns.discord) { // check the discord cooldown vs adjusted current time
+							if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) { // check the discord cooldown vs adjusted current time
 								client.say(channel, command.message.replace("$username", user['display-name']));
-								Cooldowns.discord = new Date(); // the discord cooldown is refreshed with the current Date()
+								Cooldowns[parsed.command] = new Date(); // the discord cooldown is refreshed with the current Date()
 							} else {
 								console.log("Discord cooldown not up"); // otherwise we get a console log that the cooldown isn't up
 							}
@@ -195,7 +215,7 @@ client.on('chat', function(channel, user, message, self) {
 						break;
 					case "!so":
 						if (checkMod(user, channel)) {
-							if (subSeconds(soCD) >= Cooldowns.so) {
+							if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
 								if (parsed.argument.length > 1) {
 									var soText = command.leadText;
 									for (word in parsed.argument) {
@@ -213,6 +233,7 @@ client.on('chat', function(channel, user, message, self) {
 									soText = soText.replace(command.replaceStrings, command.singular);
 									client.say(channel, soText);
 								}
+								Cooldowns[parsed.command] = new Date();
 							} else {
 								console.log("Shoutout cooldown not up");
 							}
@@ -220,13 +241,14 @@ client.on('chat', function(channel, user, message, self) {
 						break;
 					case "!multi":
 						if (checkMod(user, channel)) {
-							if (subSeconds(multiCD) >= Cooldowns.multi) {
+							if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
 								var multiText = command.leadText + " " + command.multiProvider + channel.slice(1) + "/";
 								for (word in parsed.argument) {
 									multiText += parsed.argument[word] + "/"
 								}
 								multiText += "layout4";
 								client.say(channel, multiText);
+								Cooldowns[parsed.command] = new Date();
 							}
 						}
 						break;
