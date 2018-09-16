@@ -202,9 +202,12 @@ client.on('chat', function(channel, user, message, self) {
 										}
 									}
 									soText += command.followText;
+									soText = soText.replace(command.replaceStrings, command.plural);
 									client.say(channel, soText);
 								} else {
-									client.say(channel, command.leadText + " http://twitch.tv/" + parsed.argument + " " + command.followText);
+									var soText = command.leadText + " http://twitch.tv/" + parsed.argument + " " + command.followText;
+									soText = soText.replace(command.replaceStrings, command.singular);
+									client.say(channel, soText);
 								}
 							} else {
 								console.log("Shoutout cooldown not up");
@@ -214,7 +217,7 @@ client.on('chat', function(channel, user, message, self) {
 					case "!multi":
 						if (checkMod(user, channel)) {
 							if (subSeconds(multiCD) >= Cooldowns.multi) {
-								var multiText = command.leadText + " " + command.multiProvider + command.channelName + "/";
+								var multiText = command.leadText + " " + command.multiProvider + channel.slice(1) + "/";
 								for (word in parsed.argument) {
 									multiText += parsed.argument[word] + "/"
 								}
