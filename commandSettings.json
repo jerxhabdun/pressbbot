@@ -14,44 +14,33 @@
 				},
 				{
 					"trigger": "!hype",
-					"cooldown": 5,
-					"allowed": false,
-					"modOnly": false,
-					"message": "Squid1 Squid2 Squid2 Squid3 Squid2 Squid2 Squid4",
-					"replaceStrings": ["$username"]
+					"cooldown": 15,
+					"allowed": true,
+					"modOnly": true
 				},
 				{
 					"trigger": "!insta",
 					"cooldown": 15,
-					"allowed": false,
-					"modOnly": false,
-					"message": "@$username, check out  weird pictures here! https://www.instagram.com/elvispressb/",
-					"replaceStrings": ["$username"]
-
+					"allowed": true,
+					"modOnly": true
 				},
 				{
 					"trigger": "!lurk",
-					"cooldown": 5,
-					"allowed": false,
-					"modOnly": false,
-					"message": "shows @$username to a comfortable seat in the lurker section.",
-					"replaceStrings": ["$username"]
+					"cooldown": 15,
+					"allowed": true,
+					"modOnly": true
 				},
 				{
 					"trigger": "!prime",
-					"cooldown": 30,
-					"allowed": false,
-					"modOnly": false,
-					"message": "@$username, How to link your Twitch and Amazon Prime: https://help.twitch.tv/customer/portal/articles/2574978-how-to-link-your-amazon-account You can use your free prime sub to get a *sweet* savage emote! It's a great way to directly support Elvis!",
-					"replaceStrings": ["$username"]
+					"cooldown": 15,
+					"allowed": true,
+					"modOnly": true
 				},
 				{
 					"trigger": "!raid",
-					"cooldown": 5,
-					"allowed": false,
-					"modOnly": false,
-					"message": "TombRaid twitchRaid TombRaid twitchRaid TombRaid twitchRaid TombRaid twitchRaid TombRaid twitchRaid",
-					"replaceStrings": ["$username"]
+					"cooldown": 15,
+					"allowed": true,
+					"modOnly": true
 				},
 				{
 					"trigger": "!so",
@@ -59,7 +48,7 @@
 					"leadText": "Go visit our $friend at ",
 					"followText": "and tell them how cool I am!",
 					"allowed": true,
-					"modOnly": true,
+					"modOnly": false,
 					"replaceStrings": ["$friend"],
 					"singular":"friend",
 					"plural":"friends"
@@ -131,12 +120,20 @@
 				{
 					"trigger": "!so",
 					"cooldown": 5,
+					"leadText": "Go visit our $friend at ",
+					"followText": "and tell them how cool I am!",
 					"allowed": true,
-					"modOnly": false
+					"modOnly": false,
+					"replaceStrings": ["$friend"],
+					"singular":"friend",
+					"plural":"friends"
 				},
 				{
 					"trigger": "!multi",
 					"cooldown": 5,
+					"leadText": "Watch us all at once at",
+					"followText": "layout4",
+					"multiProvider": "http://multistre.am/",
 					"allowed": true,
 					"modOnly": true
 				}
