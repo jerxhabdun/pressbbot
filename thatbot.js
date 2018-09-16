@@ -73,6 +73,9 @@ if (typeof Cooldowns.color == 'undefined') {
 		console.log('Color cooldown: ' + Cooldowns.color);
 }
 
+
+Cooldowns = jerx.initCooldowns(Cooldowns, settingsJSON.channels[1].commands);
+/*
 if (typeof Cooldowns.discord == 'undefined') {
 		Cooldowns.discord = new Date();
 		console.log('Discord cmd cooldown: ' + Cooldowns.discord);
@@ -112,6 +115,7 @@ if (typeof Cooldowns.multi == 'undefined') {
 	Cooldowns.multi = new Date();
 	console.log('Multi cmd cooldown: ' + Cooldowns.multi);
 }
+*/
 // end create cooldown Date()s in memory
 
 client.on('chat', function(channel, user, message, self) {
@@ -134,53 +138,69 @@ client.on('chat', function(channel, user, message, self) {
 			var command = jerx.getCommandSettings(settings, parsed.command);
 			//console.log("Command is: "+command.trigger+" cooldown is "+command.cooldown+" allowed is "+command.allowed+" modOnly is "+command.modOnly);
 			//TODO: actually use the command object to drive the switch
+			var replaceObj = {};
+			var replaced = "";
+			if(typeof command.replaceStrings !== "undefined") {
+				replaceObj = {
+					message : command.message,
+					replaceArray : command.replaceStrings,
+					chatInfo: {
+						user: user,
+						channel: channel
+					}
+				};
+				jerx.log(command.message);
+				replaced = jerx.replaceStringContents(replaceObj);
+				jerx.log(replaced);
+			}
+			
 			if(command.matched) {
 				switch (parsed.command) {
 					case "!raid":
-						if (subSeconds(raidCD) >= Cooldowns.raid) {
+						if (subSeconds(raidCD) >= Cooldowns[parsed.command]) {
 							client.say(channel, "twitchRaid TombRaid twitchRaid TombRaid twitchRaid TombRaid twitchRaid TombRaid twitchRaid");
-						Cooldowns.raid = new Date();
+						Cooldowns[parsed.command] = new Date();
 						} else {
 							console.log("Raid cooldown not up");
 						}
 						break;
 					case "!prime":
-						if (subSeconds(primeCD) >= Cooldowns.prime) {
+						if (subSeconds(primeCD) >= Cooldowns[parsed.command]) {
 							client.say(channel, "@" + user['display-name'] + " How to link your Twitch and Amazon Prime: https://help.twitch.tv/customer/portal/articles/2574978-how-to-link-your-amazon-account You can use your free prime sub to get a *sweet* savage emote! It's a great way to directly support Elvis!");
-							Cooldowns.prime = new Date();
+							Cooldowns[parsed.command] = new Date();
 						} else {
 							console.log("Prime cooldown not up");
 						}
 						break;
 					case "!lurk":
-						if (subSeconds(lurkCD) >= Cooldowns.lurk) {
+						if (subSeconds(lurkCD) >= Cooldowns[parsed.command]) {
 							client.action(channel, "shows @" + user['display-name'] + " to a comfortable seat in the lurker section.");
-							Cooldowns.lurk = new Date();
+							Cooldowns[parsed.command] = new Date();
 						} else {
 							console.log("Lurk cooldown not up");
 						}
 						break;
 					case "!insta":
-						if (subSeconds(instaCD) >= Cooldowns.insta) {
+						if (subSeconds(instaCD) >= Cooldowns[parsed.command]) {
 							client.say(channel, "@" + user['display-name'] + " , check out Elvis' weird pictures here! https://www.instagram.com/elvispressb/");
-							Cooldowns.insta = new Date();
+							Cooldowns[parsed.command] = new Date();
 						} else {
 							console.log("Insta cooldown not up");
 						}
 						break;
 					case "!hype":
-						if (subSeconds(hypeCD) >= Cooldowns.hype) {
+						if (subSeconds(hypeCD) >= Cooldowns[parsed.command]) {
 							client.say(channel, "Squid1 Squid2 Squid2 Squid3 Squid2 Squid2 Squid4");
-							Cooldowns.hype = new Date();
+							Cooldowns[parsed.command] = new Date();
 						} else {
 							console.log("Hype cooldown not up");
 						}
 						break;
 					case "!discord": // discord command ?
 						if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
-							if (subSeconds(command.cooldown) >= Cooldowns.discord) { // check the discord cooldown vs adjusted current time
+							if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) { // check the discord cooldown vs adjusted current time
 								client.say(channel, command.message.replace("$username", user['display-name']));
-								Cooldowns.discord = new Date(); // the discord cooldown is refreshed with the current Date()
+								Cooldowns[parsed.command] = new Date(); // the discord cooldown is refreshed with the current Date()
 							} else {
 								console.log("Discord cooldown not up"); // otherwise we get a console log that the cooldown isn't up
 							}
@@ -191,7 +211,7 @@ client.on('chat', function(channel, user, message, self) {
 						break;
 					case "!so":
 						if (checkMod(user, channel)) {
-							if (subSeconds(soCD) >= Cooldowns.so) {
+							if (subSeconds(soCD) >= Cooldowns[parsed.command]) {
 								if (parsed.argument.length > 1) {
 									var soText = "Go visit our friends at ";
 									for (word in parsed.argument) {
@@ -206,6 +226,7 @@ client.on('chat', function(channel, user, message, self) {
 								} else {
 									client.say(channel, "Go to http://twitch.tv/" + parsed.argument + " and tell them I'm cool");
 								}
+								Cooldowns[parsed.command] = new Date();
 							} else {
 								console.log("Shoutout cooldown not up");
 							}
@@ -213,13 +234,14 @@ client.on('chat', function(channel, user, message, self) {
 						break;
 					case "!multi":
 						if (checkMod(user, channel)) {
-							if (subSeconds(multiCD) >= Cooldowns.multi) {
+							if (subSeconds(multiCD) >= Cooldowns[parsed.command]) {
 								var multiText = "Watch us all at once! Visit http://multistre.am/ElvisPressB/";
 								for (word in parsed.argument) {
 									multiText += parsed.argument[word] + "/"
 								}
 								multiText += "layout4";
 								client.say(channel, multiText);
+								Cooldowns[parsed.command] = new Date();
 							}
 						}
 						break;
