@@ -266,4 +266,3 @@ client.on("whisper", function (from, userstate, message, self) {
 		}
 		return;
 	}
-});

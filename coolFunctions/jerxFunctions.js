@@ -57,9 +57,6 @@ function getCommandSettings(obj, commandName){
 }
 
 function parse(message){
-	if(message.charAt(0) !== '!'){
-		message = "!"+message
-	}
 	var commands = message.split(" ");
 	var arguments = commands.splice(1);
 	return {command: commands[0], success: true, argument: arguments};
