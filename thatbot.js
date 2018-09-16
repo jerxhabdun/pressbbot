@@ -193,7 +193,7 @@ client.on('chat', function(channel, user, message, self) {
 						if (checkMod(user, channel)) {
 							if (subSeconds(soCD) >= Cooldowns.so) {
 								if (parsed.argument.length > 1) {
-									var soText = "Go visit our friends at ";
+									var soText = command.leadText;
 									for (word in parsed.argument) {
 										if (word == parsed.argument.length-1) {
 											soText += "http://twitch.tv/" + parsed.argument[word] + " ";
@@ -201,10 +201,13 @@ client.on('chat', function(channel, user, message, self) {
 											soText += "http://twitch.tv/" + parsed.argument[word] + " & ";
 										}
 									}
-									soText += " and tell them I'm cool!";
+									soText += command.followText;
+									soText = soText.replace(command.replaceStrings, command.plural);
 									client.say(channel, soText);
 								} else {
-									client.say(channel, "Go to http://twitch.tv/" + parsed.argument + " and tell them I'm cool");
+									var soText = command.leadText + " http://twitch.tv/" + parsed.argument + " " + command.followText;
+									soText = soText.replace(command.replaceStrings, command.singular);
+									client.say(channel, soText);
 								}
 							} else {
 								console.log("Shoutout cooldown not up");
@@ -214,7 +217,7 @@ client.on('chat', function(channel, user, message, self) {
 					case "!multi":
 						if (checkMod(user, channel)) {
 							if (subSeconds(multiCD) >= Cooldowns.multi) {
-								var multiText = "Watch us all at once! Visit http://multistre.am/ElvisPressB/";
+								var multiText = command.leadText + " " + command.multiProvider + channel.slice(1) + "/";
 								for (word in parsed.argument) {
 									multiText += parsed.argument[word] + "/"
 								}
