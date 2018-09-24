@@ -210,6 +210,15 @@
 					"multiProvider": "http://multistre.am/",
 					"allowed": true,
 					"modOnly": true
+				},
+				{
+					"trigger": "!poll",
+					"cooldown": 5,
+					"pollLength": 2,
+					"maxPercent": 75,
+					"minPercent": 25,
+					"allowed": true,
+					"modOnly": true
 				}
 			]
 		}

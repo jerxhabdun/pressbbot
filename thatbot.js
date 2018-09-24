@@ -1,11 +1,13 @@
+"use strict";
 var tmi = require('tmi.js');
-var jerx = require('./coolfunctions/jerxfunctions.js');
+var jerx = require('./functions/functions.js');
 const login = require('./login');
+const Poll = require('./functions/poll.js');
 
 //This is a static load. Can update later to be asynch call so that channels can be added dynamically if needed
-var channelsFile = require('./channels.json');
-var admins = require('./admins.json');
-var settingsJSON = require('./commandSettings.json');
+var channelsFile = require('./config/channels.json');
+var admins = require('./config/admins.json');
+var settingsJSON = require('./config/commandSettings.json');
 
 // TMI OPTIONS
 var options = {
@@ -76,6 +78,9 @@ function checkMod(user, channel) {
 
 
 Cooldowns = jerx.initCooldowns(Cooldowns, settingsJSON.channels[1].commands);
+
+// Set up a Poll class so this channel can run polls
+var poll = new Poll();
 
 // vvvv Attempting to create a channel named object in memory upon joining a channel and store cooldowns on it vvvv
 // tried upper and lowercase, tried multiple variable switches as the channelName variable alone was not giving the desired results and or was getting lost
@@ -278,6 +283,32 @@ client.on('chat', function(channel, user, message, self) {
 								multiText += "layout4";
 								client.say(channel, multiText);
 								Cooldowns[parsed.command] = new Date();
+							}
+						}
+						break;
+					case "!poll":
+						//console.log(typeof poll);
+						if (poll.isActive()) {
+							if (parsed.argument == "stop") {
+								poll.stop();
+							} else {
+								poll.registerVote(parsed.argument, user.username);
+							}
+						} else {
+							//console.log(parsed.message);
+							let question = parsed.msg.split("?")[0] + "?";
+							question = question.substring(5);
+							let answers = parsed.msg.split("?")[1];
+							answers = answers.split("/");
+							for (let a in answers) {
+								answers[a] = answers[a].trim();
+							}
+							poll = new Poll(question, answers, command.pollLength, command.minPercent, command.maxPercent, 0, client, channel);
+							if (poll.start()) {
+								client.say(channel, "Poll started.");
+								poll.report(client, channel);
+							} else {
+								client.say(channel, "Poll not started.");
 							}
 						}
 						break;

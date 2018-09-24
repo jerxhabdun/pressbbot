@@ -1,0 +1,6 @@
+{
+    "time_remaining" : "Time remaining:",
+    "time_up" : "Time is up! Poll has ended!",
+    "poll_stopped" : "Poll has been stopped.",
+    "winner" : "WINNER IS: $winner with $maxvote votes!"
+}
