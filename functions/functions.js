@@ -87,7 +87,7 @@ function initCooldowns(obj, commands){
 function parse(message){
 	var commands = message.split(" ");
 	var arguments = commands.splice(1);
-	return {command: commands[0], success: true, argument: arguments};
+	return {command: commands[0], success: true, argument: arguments, msg: message};
 }
 
 var timerIds = [];
