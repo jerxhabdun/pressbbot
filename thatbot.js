@@ -4,6 +4,12 @@ var jerx = require('./functions/functions.js');
 const login = require('./login');
 const Poll = require('./functions/poll.js');
 
+// Set the error reporting level.
+// 0 = no errors reported
+// 1 = simple error messages reported
+// 2 = full stack traces reported
+const debugLevel = 1;
+
 //This is a static load. Can update later to be asynch call so that channels can be added dynamically if needed
 var channelsFile = require('./config/channels.json');
 var admins = require('./config/admins.json');
@@ -184,33 +190,45 @@ client.on('chat', function(channel, user, message, self) {
 				
 				switch (parsed.command) {
 					case "!raid":
-						if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
-							if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
-								client.say(channel, command.message);
-							Cooldowns[parsed.command] = new Date();
-							} else {
-								console.log("Raid cooldown not up");
+						try {
+							if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
+								if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
+									client.say(channel, command.message);
+								Cooldowns[parsed.command] = new Date();
+								} else {
+									console.log("Raid cooldown not up");
+								}
 							}
+						} catch (err) {
+							const e = debugLevel === 1 ? console.log("Error: " + err.message) : debugLevel === 2 ? console.log("Error: " + err.stack) : null; 
 						}
 						break;
 					case "!prime":
-						if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
-							if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
-								client.say(channel, command.message.replace("$username", user['display-name']));
-								Cooldowns[parsed.command] = new Date();
-							} else {
-								console.log("Prime cooldown not up");
+						try {
+							if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
+								if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
+									client.say(channel, command.message.replace("$username", user['display-name']));
+									Cooldowns[parsed.command] = new Date();
+								} else {
+									console.log("Prime cooldown not up");
+								}
 							}
+						} catch (err) {
+							const e = debugLevel === 1 ? console.log("Error: " + err.message) : debugLevel === 2 ? console.log("Error: " + err.stack) : null; 
 						}
 						break;
 					case "!lurk":
-						if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
-							if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
-								client.say(channel, command.message.replace("$username", user['display-name']));
-								Cooldowns[parsed.command] = new Date();
-							} else {
-								console.log("Lurk cooldown not up");
+						try {
+							if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
+								if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
+									client.say(channel, command.message.replace("$username", user['display-name']));
+									Cooldowns[parsed.command] = new Date();
+								} else {
+									console.log("Lurk cooldown not up");
+								}
 							}
+						} catch (err) {
+							const e = debugLevel === 1 ? console.log("Error: " + err.message) : debugLevel === 2 ? console.log("Error: " + err.stack) : null; 
 						}
 						break;
 					case "!insta":
@@ -224,91 +242,124 @@ client.on('chat', function(channel, user, message, self) {
 						}
 						break;
 					case "!hype":
-						if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
-							if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
-								client.say(channel, command.message);
-								Cooldowns[parsed.command] = new Date();
-							} else {
-								console.log("Hype cooldown not up");
+						try {
+							if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
+								if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
+									client.say(channel, command.message);
+									Cooldowns[parsed.command] = new Date();
+								} else {
+									console.log("Hype cooldown not up");
+								}
 							}
+						} catch (err) {
+							const e = debugLevel === 1 ? console.log("Error: " + err.message) : debugLevel === 2 ? console.log("Error: " + err.stack) : null; 
 						}
 						break;
 					case "!discord": // discord command ?
-						if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
-							if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) { // check the discord cooldown vs adjusted current time
-								client.say(channel, command.message.replace("$username", user['display-name']));
-								Cooldowns[parsed.command] = new Date(); // the discord cooldown is refreshed with the current Date()
-							} else {
-								console.log("Discord cooldown not up: " + Cooldowns[parsed.command]); // otherwise we get a console log that the cooldown isn't up
+						try {
+							if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
+								if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) { // check the discord cooldown vs adjusted current time
+									client.say(channel, command.message.replace("$username", user['display-name']));
+									Cooldowns[parsed.command] = new Date(); // the discord cooldown is refreshed with the current Date()
+								} else {
+									console.log("Discord cooldown not up: " + Cooldowns[parsed.command]); // otherwise we get a console log that the cooldown isn't up
+								}
 							}
+						} catch (err) {
+							const e = debugLevel === 1 ? console.log("Error: " + err.message) : debugLevel === 2 ? console.log("Error: " + err.stack) : null; 
 						}
 						break;
 					case "!skynet":
-						client.say(channel, "I'm sorry, I certainly don't know what you're talking about...");
+						try {
+							client.say(channel, "I'm sorry, I certainly don't know what you're talking about...");	
+						} catch (err) {
+							const e = debugLevel === 1 ? console.log("Error: " + err.message) : debugLevel === 2 ? console.log("Error: " + err.stack) : null; 
+						}
 						break;
 					case "!so":
-						if (checkMod(user, channel)) {
-							if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
-								if (parsed.argument.length > 1) {
-									var soText = command.leadText;
-									for (word in parsed.argument) {
-										if (word == parsed.argument.length-1) {
-											soText += "http://twitch.tv/" + parsed.argument[word] + " ";
-										} else {
-											soText += "http://twitch.tv/" + parsed.argument[word] + " & ";
+						try {
+							if (checkMod(user, channel)) {
+								if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
+									if (parsed.argument.length > 1) {
+										var soText = command.leadText;
+										for (let word in parsed.argument) {
+											if (word == parsed.argument.length-1) {
+												soText += "http://twitch.tv/" + parsed.argument[word] + " ";
+											} else {
+												soText += "http://twitch.tv/" + parsed.argument[word] + " & ";
+											}
 										}
+										soText += command.followText;
+										soText = soText.replace(command.replaceStrings, command.plural);
+										client.say(channel, soText);
+									} else {
+										var soText = command.leadText + " http://twitch.tv/" + parsed.argument + " " + command.followText;
+										soText = soText.replace(command.replaceStrings, command.singular);
+										client.say(channel, soText);
 									}
-									soText += command.followText;
-									soText = soText.replace(command.replaceStrings, command.plural);
-									client.say(channel, soText);
+									Cooldowns[parsed.command] = new Date();
 								} else {
-									var soText = command.leadText + " http://twitch.tv/" + parsed.argument + " " + command.followText;
-									soText = soText.replace(command.replaceStrings, command.singular);
-									client.say(channel, soText);
+									console.log("Shoutout cooldown not up");
 								}
-								Cooldowns[parsed.command] = new Date();
-							} else {
-								console.log("Shoutout cooldown not up");
 							}
+						} catch (err) {
+							const e = debugLevel === 1 ? console.log("Error: " + err.message) : debugLevel === 2 ? console.log("Error: " + err.stack) : null; 
 						}
 						break;
 					case "!multi":
-						if (checkMod(user, channel)) {
-							if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
-								var multiText = command.leadText + " " + command.multiProvider + channel.slice(1) + "/";
-								for (word in parsed.argument) {
-									multiText += parsed.argument[word] + "/"
+						try {
+							if (checkMod(user, channel)) {
+								if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
+									var multiText = command.leadText + " " + command.multiProvider + channel.slice(1) + "/";
+									for (let word in parsed.argument) {
+										multiText += parsed.argument[word] + "/"
+									}
+									multiText += "layout4";
+									client.say(channel, multiText);
+									Cooldowns[parsed.command] = new Date();
 								}
-								multiText += "layout4";
-								client.say(channel, multiText);
-								Cooldowns[parsed.command] = new Date();
 							}
+						} catch (err) {
+							const e = debugLevel === 1 ? console.log("Error: " + err.message) : debugLevel === 2 ? console.log("Error: " + err.stack) : null; 
 						}
 						break;
 					case "!poll":
-						//console.log(typeof poll);
+						try {
+							if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
+								//console.log(typeof poll);
+								if (poll.isActive()) {
+									if (parsed.argument == "stop") {
+										poll.stop();
+									} else {
+										poll.registerVote(parsed.argument, user.username);
+									}
+								} else {
+									//console.log(parsed.message);
+									let question = parsed.msg.split("?")[0] + "?";
+									question = question.substring(5);
+									let answers = parsed.msg.split("?")[1];
+									answers = answers.split("/");
+									for (let a in answers) {
+										answers[a] = answers[a].trim();
+									}
+									poll = new Poll(question, answers, command.pollLength, command.minPercent, command.maxPercent, 0, client, channel);
+									if (poll.start()) {
+										client.say(channel, poll.getString("poll_started"));
+										poll.report(client, channel);
+									} else {
+										client.say(channel, poll.getString("poll_not_started"));
+									}
+								}
+							}
+						} catch (err) {
+							const e = debugLevel === 1 ? console.log("Error: " + err.message) : debugLevel === 2 ? console.log("Error: " + err.stack) : null; 
+						}
+						break;
+					case "!vote":
 						if (poll.isActive()) {
-							if (parsed.argument == "stop") {
-								poll.stop();
-							} else {
-								poll.registerVote(parsed.argument, user.username);
-							}
+							poll.registerVote(parsed.argument, user.username);
 						} else {
-							//console.log(parsed.message);
-							let question = parsed.msg.split("?")[0] + "?";
-							question = question.substring(5);
-							let answers = parsed.msg.split("?")[1];
-							answers = answers.split("/");
-							for (let a in answers) {
-								answers[a] = answers[a].trim();
-							}
-							poll = new Poll(question, answers, command.pollLength, command.minPercent, command.maxPercent, 0, client, channel);
-							if (poll.start()) {
-								client.say(channel, "Poll started.");
-								poll.report(client, channel);
-							} else {
-								client.say(channel, "Poll not started.");
-							}
+							client.say(channel, "No poll is currently running.");
 						}
 						break;
 					default:

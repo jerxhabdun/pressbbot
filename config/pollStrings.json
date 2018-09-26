@@ -2,5 +2,8 @@
     "time_remaining" : "Time remaining:",
     "time_up" : "Time is up! Poll has ended!",
     "poll_stopped" : "Poll has been stopped.",
-    "winner" : "WINNER IS: $winner with $maxvote votes!"
+    "winner" : "WINNER IS: $winner with $maxvote votes!",
+    "novotes" : "No votes were cast!",
+    "poll_started" : "Poll started.",
+    "poll_not_started" : "Poll not started."
 }
