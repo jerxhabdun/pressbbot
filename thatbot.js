@@ -144,7 +144,7 @@ client.on('chat', function(channel, user, message, self) {
 				switch (parsed.command) {
 					case "!raid":
 						try {
-							if(command.allowed && (!command.modOnly || (command.modOnly && checkMod(user, channel)))) {
+							if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
 								if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
 									client.say(channel, command.message);
 								Cooldowns[parsed.command] = new Date();
@@ -158,7 +158,7 @@ client.on('chat', function(channel, user, message, self) {
 						break;
 					case "!prime":
 						try {
-							if(command.allowed && (!command.modOnly || (command.modOnly && checkMod(user, channel)))) {
+							if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
 								if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
 									client.say(channel, command.message.replace("$username", user['display-name']));
 									Cooldowns[parsed.command] = new Date();
@@ -172,7 +172,7 @@ client.on('chat', function(channel, user, message, self) {
 						break;
 					case "!lurk":
 						try {
-							if(command.allowed && (!command.modOnly || (command.modOnly && checkMod(user, channel)))) {
+							if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
 								if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
 									client.say(channel, command.message.replace("$username", user['display-name']));
 									Cooldowns[parsed.command] = new Date();
@@ -185,26 +185,18 @@ client.on('chat', function(channel, user, message, self) {
 						}
 						break;
 					case "!insta":
-<<<<<<< HEAD
-						if (subSeconds(instaCD) >= Cooldowns[parsed.command]) {
-							client.say(channel, "@" + user['display-name'] + " , check out Elvis' weird pictures here! https://www.instagram.com/elvispressb/");
-							Cooldowns[parsed.command] = new Date();
-						} else {
-							console.log("Insta cooldown not up");
-=======
-						if(command.allowed && (!command.modOnly || (command.modOnly && checkMod(user, channel)))) {
+						if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
 							if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
 								client.say(channel, command.message.replace("$username", user['display-name']));
 								Cooldowns[parsed.command] = new Date();
 							} else {
 								console.log("Insta cooldown not up");
 							}
->>>>>>> e97a71e... Add random subscriber function from provided csv.
 						}
 						break;
 					case "!hype":
 						try {
-							if(command.allowed && (!command.modOnly || (command.modOnly && checkMod(user, channel)))) {
+							if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
 								if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
 									client.say(channel, command.message);
 									Cooldowns[parsed.command] = new Date();
@@ -218,7 +210,7 @@ client.on('chat', function(channel, user, message, self) {
 						break;
 					case "!discord": // discord command ?
 						try {
-							if(command.allowed && (!command.modOnly || (command.modOnly && checkMod(user, channel)))) {
+							if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
 								if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) { // check the discord cooldown vs adjusted current time
 									client.say(channel, command.message.replace("$username", user['display-name']));
 									Cooldowns[parsed.command] = new Date(); // the discord cooldown is refreshed with the current Date()
@@ -286,7 +278,7 @@ client.on('chat', function(channel, user, message, self) {
 						break;
 					case "!poll":
 						try {
-							if(command.allowed && (!command.modOnly || (command.modOnly && checkMod(user, channel)))) {
+							if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
 								//console.log(typeof poll);
 								if (poll.isActive()) {
 									if (parsed.argument == "stop") {
@@ -319,7 +311,7 @@ client.on('chat', function(channel, user, message, self) {
 						break;
 					case "!vote":
 						try {
-							if(command.allowed && (!command.modOnly || (command.modOnly && checkMod(user, channel)))) {
+							if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
 								if (poll.isActive()) {
 									poll.registerVote(parsed.argument, user.username);
 								} else {
@@ -335,7 +327,7 @@ client.on('chat', function(channel, user, message, self) {
 						break;
 					case "!randomsub":
 						try {
-							if(command.allowed && (!command.modOnly || (command.modOnly && checkMod(user, channel)))) {
+							if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
 								let winner = func.getRandomSub("subscriber-list.csv").then(function(result) {
 									client.say(channel, "Winner is: " + result);
 								});

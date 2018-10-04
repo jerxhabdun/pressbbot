@@ -42,17 +42,21 @@ function searchArray(obj, arrayVar){
 }
 
 function getChannelSettings(obj, channelName){
-	var channel = new Object();
-	//console.log("Channel actual name is: "+channelName);
-	arrayVar = obj.channels;
-	arrayVar.forEach((incObj, index) => {
-		//console.log("Settings channel name is: "+incObj.name);
-		if(channelName === incObj.name)
-		{
-			channel = incObj;
-		}
-	});
-	return channel;
+    var channel = new Object();
+    var found = false;
+    //console.log("Channel actual name is: "+channelName);
+    arrayVar = obj.channels;
+    arrayVar.forEach((incObj, index) => {
+        //console.log("Settings channel name is: "+incObj.name);
+        if(channelName === incObj.name)
+        {
+            channel = incObj;
+            found = true;
+        }
+    });
+    if(!found)
+        channel = getChannelSettings(obj, "#default");
+    return channel;
 }
 
 function getCommandSettings(obj, commandName){
