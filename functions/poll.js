@@ -10,6 +10,7 @@
        Forces the vote to stop and immediately announce a winner
 
      !poll vote
+     Alternative: !vote
        Accepts a vote, that must either match an answer's text exactly (case insensitive)
          or the number in which it appears (shown in the report)
 

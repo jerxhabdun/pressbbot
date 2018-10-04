@@ -1,7 +1,7 @@
 "use strict";
 var tmi = require('tmi.js');
-var jerx = require('./functions/functions.js');
-const login = require('./login');
+var func = require('./functions/functions.js');
+const login = require('./config/login');
 const Poll = require('./functions/poll.js');
 
 // Set the error reporting level.
@@ -39,10 +39,10 @@ var client = new tmi.client(options);
 client.connect();
 
 client.on('connected', function(address, port) {
-	jerx.clearLog();
-	jerx.log("Address: " + address + " Port: " + port);
+	func.clearLog();
+	func.log("Address: " + address + " Port: " + port);
 	//This is a test of the timer crap I'm working on
-	//var id = jerx.manageTimers((function() { console.log('This is an iterative test'); }), null, null, null);
+	//var id = func.manageTimers((function() { console.log('This is an iterative test'); }), null, null, null);
 });
 // end set up, connect and console log client information
 
@@ -83,10 +83,10 @@ function initOnJoin(channel){
 	if(typeof liveSettings[channel].Poll === "undefined")
 		liveSettings[channel].Poll = new Poll();
 	
-	jerx.log("Initiating cooldowns for channel: "+channel);
-	var settings = jerx.getChannelSettings(settingsJSON, channel);
+	func.log("Initiating cooldowns for channel: "+channel);
+	var settings = func.getChannelSettings(settingsJSON, channel);
 	var commands = settings.commands;
-	liveSettings[channel].Cooldowns = jerx.initCooldowns(liveSettings[channel].Cooldowns, commands);
+	liveSettings[channel].Cooldowns = func.initCooldowns(liveSettings[channel].Cooldowns, commands);
 	//client.color(typeof settings != "undefined" ? ( typeof settings.color == "string"? settings.color: "Red") : "Red");
 	client.color("Red");
 }
@@ -96,17 +96,17 @@ function initOnJoin(channel){
 client.on('chat', function(channel, user, message, self) {
 	if(self) return;
 	
-	var settings = jerx.getChannelSettings(settingsJSON, channel);
+	var settings = func.getChannelSettings(settingsJSON, channel);
 	//console.log("The name of the settings is: "+settings.name+" and their preferred color is: "+settings.color);
 	var Cooldowns = liveSettings[channel].Cooldowns;
 	var poll = liveSettings[channel].Poll;
 
 	if (message) {
 
-		var parsed = jerx.parse(message);
+		var parsed = func.parse(message);
 		
 		if (parsed.success) {
-			var command = jerx.getCommandSettings(settings, parsed.command);
+			var command = func.getCommandSettings(settings, parsed.command);
 			//console.log("Command is: "+command.trigger+" cooldown is "+command.cooldown+" allowed is "+command.allowed+" modOnly is "+command.modOnly);
 			//TODO: actually use the command object to drive the switch
 			var replaceObj = {};
@@ -120,9 +120,9 @@ client.on('chat', function(channel, user, message, self) {
 						channel: channel
 					}
 				};
-				jerx.log(command.message);
-				replaced = jerx.replaceStringContents(replaceObj);
-				jerx.log(replaced);
+				func.log(command.message);
+				replaced = func.replaceStringContents(replaceObj);
+				func.log(replaced);
 			}
 			
 			if(command.matched && command.allowed) {
@@ -138,7 +138,7 @@ client.on('chat', function(channel, user, message, self) {
 				switch (parsed.command) {
 					case "!raid":
 						try {
-							if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
+							if(command.allowed && (!command.modOnly || (command.modOnly && checkMod(user, channel)))) {
 								if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
 									client.say(channel, command.message);
 								Cooldowns[parsed.command] = new Date();
@@ -152,7 +152,7 @@ client.on('chat', function(channel, user, message, self) {
 						break;
 					case "!prime":
 						try {
-							if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
+							if(command.allowed && (!command.modOnly || (command.modOnly && checkMod(user, channel)))) {
 								if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
 									client.say(channel, command.message.replace("$username", user['display-name']));
 									Cooldowns[parsed.command] = new Date();
@@ -166,7 +166,7 @@ client.on('chat', function(channel, user, message, self) {
 						break;
 					case "!lurk":
 						try {
-							if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
+							if(command.allowed && (!command.modOnly || (command.modOnly && checkMod(user, channel)))) {
 								if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
 									client.say(channel, command.message.replace("$username", user['display-name']));
 									Cooldowns[parsed.command] = new Date();
@@ -179,7 +179,7 @@ client.on('chat', function(channel, user, message, self) {
 						}
 						break;
 					case "!insta":
-						if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
+						if(command.allowed && (!command.modOnly || (command.modOnly && checkMod(user, channel)))) {
 							if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
 								client.say(channel, command.message.replace("$username", user['display-name']));
 								Cooldowns[parsed.command] = new Date();
@@ -190,7 +190,7 @@ client.on('chat', function(channel, user, message, self) {
 						break;
 					case "!hype":
 						try {
-							if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
+							if(command.allowed && (!command.modOnly || (command.modOnly && checkMod(user, channel)))) {
 								if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
 									client.say(channel, command.message);
 									Cooldowns[parsed.command] = new Date();
@@ -204,7 +204,7 @@ client.on('chat', function(channel, user, message, self) {
 						break;
 					case "!discord": // discord command ?
 						try {
-							if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
+							if(command.allowed && (!command.modOnly || (command.modOnly && checkMod(user, channel)))) {
 								if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) { // check the discord cooldown vs adjusted current time
 									client.say(channel, command.message.replace("$username", user['display-name']));
 									Cooldowns[parsed.command] = new Date(); // the discord cooldown is refreshed with the current Date()
@@ -272,7 +272,7 @@ client.on('chat', function(channel, user, message, self) {
 						break;
 					case "!poll":
 						try {
-							if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
+							if(command.allowed && (!command.modOnly || (command.modOnly && checkMod(user, channel)))) {
 								//console.log(typeof poll);
 								if (poll.isActive()) {
 									if (parsed.argument == "stop") {
@@ -304,13 +304,30 @@ client.on('chat', function(channel, user, message, self) {
 						}
 						break;
 					case "!vote":
-						if (poll.isActive()) {
-							poll.registerVote(parsed.argument, user.username);
-						} else {
-							if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
-								client.say(channel, "No poll is currently running.");
-								Cooldowns[parsed.command] = new Date();
+						try {
+							if(command.allowed && (!command.modOnly || (command.modOnly && checkMod(user, channel)))) {
+								if (poll.isActive()) {
+									poll.registerVote(parsed.argument, user.username);
+								} else {
+									client.say(channel, "No poll is currently running.");
+									if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
+										Cooldowns[parsed.command] = new Date();
+									}
+								}
 							}
+						} catch (err) {
+							const e = debugLevel === 1 ? console.log("Error: " + err.message) : debugLevel === 2 ? console.log("Error: " + err.stack) : null; 
+						}
+						break;
+					case "!randomsub":
+						try {
+							if(command.allowed && (!command.modOnly || (command.modOnly && checkMod(user, channel)))) {
+								let winner = func.getRandomSub("subscriber-list.csv").then(function(result) {
+									client.say(channel, "Winner is: " + result);
+								});
+							}
+						} catch (err) {
+							const e = debugLevel === 1 ? console.log("Error: " + err.message) : debugLevel === 2 ? console.log("Error: " + err.stack) : null; 
 						}
 						break;
 					default:
@@ -318,7 +335,7 @@ client.on('chat', function(channel, user, message, self) {
 				}
 			}
 		}
-		//jerx.log("Username is "+user.username)
+		//func.log("Username is "+user.username)
 		/*
 		** This is a test of individual responses
 		if(user.username == 'jerxhabdun')
@@ -327,8 +344,8 @@ client.on('chat', function(channel, user, message, self) {
 		}
 		else if(user.username == 'sergeantsmokie')
 		{
-			var mocked = jerx.spongeMock(message);
-			jerx.log(mocked);
+			var mocked = func.spongeMock(message);
+			func.log(mocked);
 			client.say(channel, mocked);
 		}
 		*/
@@ -339,8 +356,8 @@ client.on("whisper", function (from, userstate, message, self) {
     // Don't listen to my own messages..
     if (self) return;
 	
-	if(jerx.searchArray(from, admins).contains) {
-		var parsed = jerx.parse(message);
+	if(func.searchArray(from, admins).contains) {
+		var parsed = func.parse(message);
 		if(parsed.success){
 			client.whisper(from, "Command accepted: "+parsed.command+" with arg "+parsed.argument);
 			if(parsed.command === "!exit")
@@ -357,7 +374,7 @@ client.on("whisper", function (from, userstate, message, self) {
 			else if(parsed.command === "!join")
 			{
 				var arr = liveSettings["_parted"];
-				var searchResult = jerx.searchArray(parsed.argument[0], arr);
+				var searchResult = func.searchArray(parsed.argument[0], arr);
 				if(searchResult.contains){
 					
 					client.join(parsed.argument[0]);

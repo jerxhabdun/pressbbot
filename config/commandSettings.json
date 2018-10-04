@@ -251,6 +251,12 @@
 					"cooldown": 5,
 					"allowed": true,
 					"modOnly": false
+				},
+				{
+					"trigger": "!randomsub",
+					"cooldown": 5,
+					"allowed": true,
+					"modOnly": true
 				}
 			]
 		}
