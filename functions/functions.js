@@ -141,6 +141,33 @@ function replaceStringContents(obj){
 	return s;
 }
 
+function getRandomSub(inputFile) {
+	// this function opens the subscriber file (inputFile) and returns
+	// a random subscriber from within that file. This is delivered asyncrhonously
+	// by way of a promise, so make sure to use .then().
+	return new Promise(resolve => {
+		var parse = require('csv-parse');
+		var fs = require('fs');
+		const output = []
+		fs.createReadStream(inputFile)
+		.pipe(parse({delimiter: ','}))
+		.on('data', function(csvrow) {
+			output.push(csvrow);        
+		})
+		.on('end',function() {
+			let min = 1;
+			let max = output.length - 1;
+			let rand = Math.floor((Math.random() * max) + min);
+			console.log("Random: " + rand);
+			
+			let winner = output[rand][0];
+			console.log("Winner: " + winner);
+			resolve(winner);
+		});
+		
+	});
+}
+
 module.exports.test = test;
 module.exports.manageTimers = manageTimers;
 module.exports.searchArray = searchArray;
@@ -152,3 +179,4 @@ module.exports.clearLog = clearLog;
 module.exports.log = log;
 module.exports.initCooldowns = initCooldowns;
 module.exports.replaceStringContents = replaceStringContents;
+module.exports.getRandomSub = getRandomSub;

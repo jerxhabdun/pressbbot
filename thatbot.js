@@ -138,7 +138,7 @@ client.on('chat', function(channel, user, message, self) {
 				switch (parsed.command) {
 					case "!raid":
 						try {
-							if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
+							if(command.allowed && (!command.modOnly || (command.modOnly && checkMod(user, channel)))) {
 								if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
 									client.say(channel, command.message);
 								Cooldowns[parsed.command] = new Date();
@@ -152,7 +152,7 @@ client.on('chat', function(channel, user, message, self) {
 						break;
 					case "!prime":
 						try {
-							if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
+							if(command.allowed && (!command.modOnly || (command.modOnly && checkMod(user, channel)))) {
 								if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
 									client.say(channel, command.message.replace("$username", user['display-name']));
 									Cooldowns[parsed.command] = new Date();
@@ -166,7 +166,7 @@ client.on('chat', function(channel, user, message, self) {
 						break;
 					case "!lurk":
 						try {
-							if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
+							if(command.allowed && (!command.modOnly || (command.modOnly && checkMod(user, channel)))) {
 								if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
 									client.say(channel, command.message.replace("$username", user['display-name']));
 									Cooldowns[parsed.command] = new Date();
@@ -179,7 +179,7 @@ client.on('chat', function(channel, user, message, self) {
 						}
 						break;
 					case "!insta":
-						if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
+						if(command.allowed && (!command.modOnly || (command.modOnly && checkMod(user, channel)))) {
 							if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
 								client.say(channel, command.message.replace("$username", user['display-name']));
 								Cooldowns[parsed.command] = new Date();
@@ -190,7 +190,7 @@ client.on('chat', function(channel, user, message, self) {
 						break;
 					case "!hype":
 						try {
-							if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
+							if(command.allowed && (!command.modOnly || (command.modOnly && checkMod(user, channel)))) {
 								if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
 									client.say(channel, command.message);
 									Cooldowns[parsed.command] = new Date();
@@ -204,7 +204,7 @@ client.on('chat', function(channel, user, message, self) {
 						break;
 					case "!discord": // discord command ?
 						try {
-							if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
+							if(command.allowed && (!command.modOnly || (command.modOnly && checkMod(user, channel)))) {
 								if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) { // check the discord cooldown vs adjusted current time
 									client.say(channel, command.message.replace("$username", user['display-name']));
 									Cooldowns[parsed.command] = new Date(); // the discord cooldown is refreshed with the current Date()
@@ -272,7 +272,7 @@ client.on('chat', function(channel, user, message, self) {
 						break;
 					case "!poll":
 						try {
-							if(!command.modOnly || (command.modOnly && checkMod(user, channel))) {
+							if(command.allowed && (!command.modOnly || (command.modOnly && checkMod(user, channel)))) {
 								//console.log(typeof poll);
 								if (poll.isActive()) {
 									if (parsed.argument == "stop") {
@@ -304,13 +304,30 @@ client.on('chat', function(channel, user, message, self) {
 						}
 						break;
 					case "!vote":
-						if (poll.isActive()) {
-							poll.registerVote(parsed.argument, user.username);
-						} else {
-							if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
-								client.say(channel, "No poll is currently running.");
-								Cooldowns[parsed.command] = new Date();
+						try {
+							if(command.allowed && (!command.modOnly || (command.modOnly && checkMod(user, channel)))) {
+								if (poll.isActive()) {
+									poll.registerVote(parsed.argument, user.username);
+								} else {
+									client.say(channel, "No poll is currently running.");
+									if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
+										Cooldowns[parsed.command] = new Date();
+									}
+								}
 							}
+						} catch (err) {
+							const e = debugLevel === 1 ? console.log("Error: " + err.message) : debugLevel === 2 ? console.log("Error: " + err.stack) : null; 
+						}
+						break;
+					case "!randomsub":
+						try {
+							if(command.allowed && (!command.modOnly || (command.modOnly && checkMod(user, channel)))) {
+								let winner = func.getRandomSub("subscriber-list.csv").then(function(result) {
+									client.say(channel, "Winner is: " + result);
+								});
+							}
+						} catch (err) {
+							const e = debugLevel === 1 ? console.log("Error: " + err.message) : debugLevel === 2 ? console.log("Error: " + err.stack) : null; 
 						}
 						break;
 					default:
