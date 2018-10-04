@@ -46,7 +46,10 @@
 					"trigger": "!so",
 					"cooldown": 15,
 					"allowed": true,
-					"modOnly": true
+					"modOnly": false,
+					"replaceStrings": ["$friend"],
+					"singular":"friend",
+					"plural":"friends"
 				},
 				{
 					"trigger": "!multi",
@@ -101,12 +104,20 @@
 				{
 					"trigger": "!so",
 					"cooldown": 5,
+					"leadText": "Go visit our $friend at ",
+					"followText": "and tell them how cool I am!",
 					"allowed": true,
-					"modOnly": false
+					"modOnly": false,
+					"replaceStrings": ["$friend"],
+					"singular":"friend",
+					"plural":"friends"
 				},
 				{
 					"trigger": "!multi",
 					"cooldown": 5,
+					"leadText": "Watch us all at once at",
+					"followText": "layout4",
+					"multiProvider": "http://multistre.am/",
 					"allowed": true,
 					"modOnly": true
 				}
