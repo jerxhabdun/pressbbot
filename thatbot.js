@@ -213,7 +213,7 @@ client.on('chat', function(channel, user, message, self) {
 						if (checkMod(user, channel)) {
 							if (subSeconds(soCD) >= Cooldowns[parsed.command]) {
 								if (parsed.argument.length > 1) {
-									var soText = "Go visit our friends at ";
+									var soText = command.leadText;
 									for (word in parsed.argument) {
 										if (word == parsed.argument.length-1) {
 											soText += "http://twitch.tv/" + parsed.argument[word] + " ";
@@ -221,10 +221,13 @@ client.on('chat', function(channel, user, message, self) {
 											soText += "http://twitch.tv/" + parsed.argument[word] + " & ";
 										}
 									}
-									soText += " and tell them I'm cool!";
+									soText += command.followText;
+									soText = soText.replace(command.replaceStrings, command.plural);
 									client.say(channel, soText);
 								} else {
-									client.say(channel, "Go to http://twitch.tv/" + parsed.argument + " and tell them I'm cool");
+									var soText = command.leadText + " http://twitch.tv/" + parsed.argument + " " + command.followText;
+									soText = soText.replace(command.replaceStrings, command.singular);
+									client.say(channel, soText);
 								}
 								Cooldowns[parsed.command] = new Date();
 							} else {
@@ -234,8 +237,13 @@ client.on('chat', function(channel, user, message, self) {
 						break;
 					case "!multi":
 						if (checkMod(user, channel)) {
+<<<<<<< HEAD
 							if (subSeconds(multiCD) >= Cooldowns[parsed.command]) {
 								var multiText = "Watch us all at once! Visit http://multistre.am/ElvisPressB/";
+=======
+							if (subSeconds(multiCD) >= Cooldowns.multi) {
+								var multiText = command.leadText + " " + command.multiProvider + channel.slice(1) + "/";
+>>>>>>> 30dce11e57d5c11571f07361e89bb34aef00e0bc
 								for (word in parsed.argument) {
 									multiText += parsed.argument[word] + "/"
 								}
