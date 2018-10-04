@@ -14,6 +14,7 @@ const debugLevel = 1;
 var channelsFile = require('./config/channels.json');
 var admins = require('./config/admins.json');
 var settingsJSON = require('./config/commandSettings.json');
+var liveSettings = new Object();
 
 // TMI OPTIONS
 var options = {
@@ -45,22 +46,15 @@ client.on('connected', function(address, port) {
 });
 // end set up, connect and console log client information
 
-// create various objects in memory
-if (typeof Cooldowns !== 'object') { 
-	var Cooldowns = new Object();
-}
-
-// end create various objects in memory
-
 // various command cooldown variables
 const soCD = 5;
 const multiCD = 5;
 
 function subSeconds(numSeconds) {
-		var time = new Date();
-		time.setSeconds(time.getSeconds() - numSeconds);
-		return time;
-	}
+	var time = new Date();
+	time.setSeconds(time.getSeconds() - numSeconds);
+	return time;
+}
 
 function checkMod(user, channel) {
 	if (user["user-type"] === "mod" || user.username === channel.replace("#", "")) { 
@@ -70,75 +64,32 @@ function checkMod(user, channel) {
 	}
 }
 
-// create cooldowns in memory
-	if (typeof Cooldowns.color == 'undefined') {
-		Cooldowns.color = 0;
-		console.log('Color not changed');
-	}
-
-
-Cooldowns = jerx.initCooldowns(Cooldowns, settingsJSON.channels[1].commands);
-
-// Set up a Poll class so this channel can run polls
-var poll = new Poll();
-
 // vvvv Attempting to create a channel named object in memory upon joining a channel and store cooldowns on it vvvv
 // tried upper and lowercase, tried multiple variable switches as the channelName variable alone was not giving the desired results and or was getting lost
 
-/* elvis
-
 client.on("join", function (channel, username, self) {
+	if(self)
+	{
+		initOnJoin(channel);
+	}
+	
+});
 
-	var channelName = channel.replace("#", "");
-	var channelObj = channelName;
-	console.log(channelObj);
-	var channelObj = new Object();
-		channelObj.name = channelName;
-	console.log(channelObj);
-
-if (typeof channelObj.discord == 'undefined') {
-	channelObj.discord = new Date();
-	console.log('Discord cmd cooldown: ' + channelObj.discord);
+function initOnJoin(channel){
+	if(typeof liveSettings[channel] === "undefined")
+		liveSettings[channel] = new Object();
+	if(typeof liveSettings[channel].Cooldowns === "undefined")
+		liveSettings[channel].Cooldowns = new Object();
+	if(typeof liveSettings[channel].Poll === "undefined")
+		liveSettings[channel].Poll = new Poll();
+	
+	jerx.log("Initiating cooldowns for channel: "+channel);
+	var settings = jerx.getChannelSettings(settingsJSON, channel);
+	var commands = settings.commands;
+	liveSettings[channel].Cooldowns = jerx.initCooldowns(liveSettings[channel].Cooldowns, commands);
+	//client.color(typeof settings != "undefined" ? ( typeof settings.color == "string"? settings.color: "Red") : "Red");
+	client.color("Red");
 }
-
-if (typeof channelObj.hype == 'undefined') {
-		channelObj.hype = new Date();
-		console.log('Hype cmd cooldown: ' + channelObj.hype);
-}
-
-if (typeof channelObj.insta == 'undefined') {
-		channelObj.insta = new Date();
-		console.log('Insta cmd cooldown: ' + channelObj.insta);
-}
-
-if (typeof channelObj.lurk == 'undefined') {
-		channelObj.lurk = new Date();
-		console.log('Lurk cmd cooldown: ' + channelObj.lurk);
-}
-
-if (typeof channelObj.prime == 'undefined') {
-		channelObj.prime = new Date();
-		console.log('Prime cmd cooldown: ' + channelObj.prime);
-}
-
-if (typeof channelObj.raid == 'undefined') {
-		channelObj.raid = new Date();
-		console.log('Raid cmd cooldown: ' + channelObj.raid);
-}
-
-if (typeof channelObj.so == 'undefined') {
-		channelObj.so = new Date();
-		console.log('SO cmd cooldown: ' + channelObj.so);
-}
-
-if (typeof channelObj.multi == 'undefined') {
-	channelObj.multi = new Date();
-	console.log('Multi cmd cooldown: ' + channelObj.multi);
-}
-
-}); 
-
-*/
 
 // ^^^^ Attempting to create a channel named object in memory upon joining a channel and store cooldowns on it ^^^^
 
@@ -147,12 +98,8 @@ client.on('chat', function(channel, user, message, self) {
 	
 	var settings = jerx.getChannelSettings(settingsJSON, channel);
 	//console.log("The name of the settings is: "+settings.name+" and their preferred color is: "+settings.color);
-	
-	
-	if (Cooldowns.color === 0) {
-		client.color(typeof settings != "undefined" ? ( typeof settings.color == "string"? settings.color: "Red") : "Red");
-		Cooldowns.color = 1;
-	}
+	var Cooldowns = liveSettings[channel].Cooldowns;
+	var poll = liveSettings[channel].Poll;
 
 	if (message) {
 
@@ -178,7 +125,7 @@ client.on('chat', function(channel, user, message, self) {
 				jerx.log(replaced);
 			}
 			
-			if(command.matched) {
+			if(command.matched && command.allowed) {
 				
 				// this is part of the attempt to implement channel named objects in memory elvis
 				// for some reason the channel name variable doesn't seem to be transferring into the switch case, tested with discord command but since reverted
@@ -346,6 +293,7 @@ client.on('chat', function(channel, user, message, self) {
 									if (poll.start()) {
 										client.say(channel, poll.getString("poll_started"));
 										poll.report(client, channel);
+										liveSettings[channel].Poll = poll;
 									} else {
 										client.say(channel, poll.getString("poll_not_started"));
 									}
@@ -359,7 +307,10 @@ client.on('chat', function(channel, user, message, self) {
 						if (poll.isActive()) {
 							poll.registerVote(parsed.argument, user.username);
 						} else {
-							client.say(channel, "No poll is currently running.");
+							if (subSeconds(command.cooldown) >= Cooldowns[parsed.command]) {
+								client.say(channel, "No poll is currently running.");
+								Cooldowns[parsed.command] = new Date();
+							}
 						}
 						break;
 					default:
@@ -367,7 +318,7 @@ client.on('chat', function(channel, user, message, self) {
 				}
 			}
 		}
-		jerx.log("Username is "+user.username)
+		//jerx.log("Username is "+user.username)
 		/*
 		** This is a test of individual responses
 		if(user.username == 'jerxhabdun')
@@ -388,10 +339,38 @@ client.on("whisper", function (from, userstate, message, self) {
     // Don't listen to my own messages..
     if (self) return;
 	
-	if(jerx.searchArray(from, admins)) {
+	if(jerx.searchArray(from, admins).contains) {
 		var parsed = jerx.parse(message);
 		if(parsed.success){
 			client.whisper(from, "Command accepted: "+parsed.command+" with arg "+parsed.argument);
+			if(parsed.command === "!exit")
+			{
+				return process.exit(0);
+			}
+			else if(parsed.command === "!part")
+			{
+				if(typeof liveSettings["_parted"] === "undefined")
+					liveSettings["_parted"] = [];
+				liveSettings["_parted"].push(parsed.argument[0]);
+				client.part(parsed.argument[0]);
+			}
+			else if(parsed.command === "!join")
+			{
+				var arr = liveSettings["_parted"];
+				var searchResult = jerx.searchArray(parsed.argument[0], arr);
+				if(searchResult.contains){
+					
+					client.join(parsed.argument[0]);
+				}
+			}
+			else if(parsed.command === "!rejoin")
+			{
+				var arrayVar = liveSettings["_parted"];
+				arrayVar.forEach((incObj, index) => {
+					client.part(incObj);
+				});
+				client.part(parsed.argument[0]);
+			}
 		}
 		else {
 			client.whisper(from, "Error!");
@@ -399,3 +378,23 @@ client.on("whisper", function (from, userstate, message, self) {
 		return;
 	}
 });
+/*
+**
+** Jerx is stubbing these out for potential implementation, ideally enabled by configurations for individual channels
+**
+client.on("hosted", function (channel, username, viewers) {
+	var enabled = false;
+    var minimum = 5;
+	if(enabled && viewers > minimum){
+		client.say(channel, "Thanks so much for the host from http://twitch.tv/"+username+" !");
+	}
+});
+
+client.on("hosting", function (channel, target, viewers) {
+    var enabled = false;
+    var minimum = 5;
+	if(enabled && viewers > minimum){
+		client.say(target, "Incoming host from http://twitch.tv/"+channel+" !");
+	}
+});
+*/
