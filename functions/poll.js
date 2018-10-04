@@ -20,6 +20,8 @@
    Future features:
      Move voting or offer alternate voting with a !vote command
      Threshhold for ending voting (i.e. 80% of a room voted yes, so go ahead and end the poll)
+   TODO:
+     Support ties in voting.
 */
 const pollStrings = require('../config/pollStrings.json');
 class Poll {
@@ -71,7 +73,6 @@ class Poll {
                 count++;
             }
             this.client.say(this.channel, questionText);
-            console.log(JSON.stringify(pollStrings));
             this.client.say(this.channel, pollStrings.time_remaining + " " + this.timeRemaining());
             this._advertisecount += 1;
         }
@@ -172,9 +173,14 @@ class Poll {
                 winner = v;
             }
         }
-        let output = pollStrings.winner;
-        output = output.replace("$winner", winner);
-        output = output.replace("$maxvote", maxVote);
+        let output;
+        if (maxVote > 0) {
+            output = pollStrings.winner;
+            output = output.replace("$winner", winner);
+            output = output.replace("$maxvote", maxVote);
+        } else {
+            output = pollStrings.novotes;
+        }
         this.client.say(this.channel, output);
     }
     timeout() {
@@ -224,6 +230,9 @@ class Poll {
             count++;
         }
         return false;
+    }
+    getString(n) {
+        return pollStrings[n];
     }
   }
   module.exports = Poll;

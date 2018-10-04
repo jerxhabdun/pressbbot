@@ -219,6 +219,12 @@
 					"minPercent": 25,
 					"allowed": true,
 					"modOnly": true
+				},
+				{
+					"trigger": "!vote",
+					"cooldown": 5,
+					"allowed": true,
+					"modOnly": false
 				}
 			]
 		}
