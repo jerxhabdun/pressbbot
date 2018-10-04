@@ -343,7 +343,7 @@ client.on("whisper", function (from, userstate, message, self) {
     // Don't listen to my own messages..
     if (self) return;
 	
-	if(jerx.searchArray(from, admins)) {
+	if(jerx.searchArray(from, admins).contains) {
 		var parsed = jerx.parse(message);
 		if(parsed.success){
 			client.whisper(from, "Command accepted: "+parsed.command+" with arg "+parsed.argument);
@@ -351,8 +351,28 @@ client.on("whisper", function (from, userstate, message, self) {
 			{
 				return process.exit(0);
 			}
-			if(parsed.command === "!part")
+			else if(parsed.command === "!part")
 			{
+				if(typeof liveSettings["_parted"] === "undefined")
+					liveSettings["_parted"] = [];
+				liveSettings["_parted"].push(parsed.argument[0]);
+				client.part(parsed.argument[0]);
+			}
+			else if(parsed.command === "!join")
+			{
+				var arr = liveSettings["_parted"];
+				var searchResult = jerx.searchArray(parsed.argument[0], arr);
+				if(searchResult.contains){
+					
+					client.join(parsed.argument[0]);
+				}
+			}
+			else if(parsed.command === "!rejoin")
+			{
+				var arrayVar = liveSettings["_parted"];
+				arrayVar.forEach((incObj, index) => {
+					client.part(incObj);
+				});
 				client.part(parsed.argument[0]);
 			}
 		}
