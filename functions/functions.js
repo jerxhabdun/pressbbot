@@ -31,11 +31,14 @@ function test() {
 
 function searchArray(obj, arrayVar){
 	var inside = false;
+	var ind = -1;
 	arrayVar.forEach((incObj, index) => {
-	  if(obj === incObj)
-		  inside = true;
+	  if(obj === incObj){
+		inside = true;
+		ind = index;
+	  }
 	});
-	return inside;
+	return {contains: inside, index: ind};
 }
 
 function getChannelSettings(obj, channelName){
@@ -94,7 +97,7 @@ var timerIds = [];
 
 function manageTimers(func, arg, time, id) {
 	
-	if(searchArray(id, timerIds))
+	if(searchArray(id, timerIds).contains)
 	{
 		clearTimeout(id);
 		return;
