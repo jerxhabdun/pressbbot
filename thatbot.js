@@ -46,16 +46,6 @@ client.on('connected', function(address, port) {
 });
 // end set up, connect and console log client information
 
-// various command cooldown variables
-const discordCD = 15;
-const hypeCD = 5;
-const instaCD = 15;
-const lurkCD = 5;
-const primeCD = 30;
-const raidCD = 5;
-const soCD = 5;
-const multiCD = 5;
-
 function subSeconds(numSeconds) {
 	var time = new Date();
 	time.setSeconds(time.getSeconds() - numSeconds);
